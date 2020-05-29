@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Blog\Admin;
 
 use App\Http\Controllers\Blog\BaseController;
+use App\Http\Requests\BlogCategoryUpdateRequest;
 use App\Models\BlogCategory;
 use Illuminate\Http\Request;
-use function Couchbase\basicDecoderV1;
 
 class CategoryController extends BaseController
 {
@@ -63,9 +63,31 @@ class CategoryController extends BaseController
    * @param int $id
    * @return \Illuminate\Http\Response
    */
-  public function update(Request $request, $id)
+  public function update(BlogCategoryUpdateRequest $request, $id)
   {
-    $id = 1111;
+    /*$rules = [
+      'title'       => 'required|min:5|max:200',
+      'slug'        => 'max:200',
+      'description' => 'string|max:500|min:3',
+      'parent_id'   => 'required|integer|exists:blog_categories,id',
+    ];
+
+    $msg = [
+      'description.min' => 'Минимальное количество символов в поле "Описание" - 3',
+    ];*/
+
+    //$validatedData = $this->validate($request, $rules, $msg);
+
+    //$validatedData = $request->validate($rules, $msg);
+
+    /*$validator = \Validator::make($request->all(), $rules);
+    $validatedData[] = $validator->passes();
+    $validatedData[] = $validator->validate();
+    $validatedData[] = $validator->valid();
+    $validatedData[] = $validator->failed();
+    $validatedData[] = $validator->errors();
+    $validatedData[] = $validator->fails();*/
+
     $item = BlogCategory::find($id);
     if (empty($item)) {
       return back()
