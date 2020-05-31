@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Blog\Admin;
 
 use App\Http\Controllers\Blog\BaseController;
+use App\Http\Requests\BlogCategoryCreateRequest;
 use App\Http\Requests\BlogCategoryUpdateRequest;
 use App\Models\BlogCategory;
-use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class CategoryController extends BaseController
 {
@@ -28,7 +29,11 @@ class CategoryController extends BaseController
    */
   public function create()
   {
-    dd(__METHOD__);
+    $item = new BlogCategory();
+    $categoryList = BlogCategory::all();
+
+    return view('blog.admin.categories.edit',
+      compact('item', 'categoryList'));
   }
 
   /**
@@ -37,9 +42,28 @@ class CategoryController extends BaseController
    * @param \Illuminate\Http\Request $request
    * @return \Illuminate\Http\Response
    */
-  public function store(Request $request)
+  public function store(BlogCategoryCreateRequest $request)
   {
-    dd(__METHOD__);
+    $data = $request->input();
+    if (empty($data['slug'])) {
+      $data['slug'] = Str::slug($data['title']);
+    }
+
+    //Создаст объект, но не добавит его в БД:
+//    $item = new BlogCategory($data);
+//    $item->save();
+
+    //Создаст объект и добавит его в БД:
+    $item = (new BlogCategory())->create($data);
+
+    if ($item) {
+      return redirect()->route('blog.admin.categories.edit', [$item->id])
+        ->with(['success' => 'Успешно сохранено']);
+    } else {
+      return back()
+        ->withErrors(['msg' => 'Ошибка сохранения'])
+        ->withInput();
+    }
   }
 
   /**
@@ -65,28 +89,6 @@ class CategoryController extends BaseController
    */
   public function update(BlogCategoryUpdateRequest $request, $id)
   {
-    /*$rules = [
-      'title'       => 'required|min:5|max:200',
-      'slug'        => 'max:200',
-      'description' => 'string|max:500|min:3',
-      'parent_id'   => 'required|integer|exists:blog_categories,id',
-    ];
-
-    $msg = [
-      'description.min' => 'Минимальное количество символов в поле "Описание" - 3',
-    ];*/
-
-    //$validatedData = $this->validate($request, $rules, $msg);
-
-    //$validatedData = $request->validate($rules, $msg);
-
-    /*$validator = \Validator::make($request->all(), $rules);
-    $validatedData[] = $validator->passes();
-    $validatedData[] = $validator->validate();
-    $validatedData[] = $validator->valid();
-    $validatedData[] = $validator->failed();
-    $validatedData[] = $validator->errors();
-    $validatedData[] = $validator->fails();*/
 
     $item = BlogCategory::find($id);
     if (empty($item)) {
@@ -96,9 +98,10 @@ class CategoryController extends BaseController
     }
 
     $data = $request->all();
-    $result = $item
-      ->fill($data)
-      ->save();
+    if (empty($data['slug'])) {
+      $data['slug'] = Str::slug($data['title']);
+    }
+    $result = $item->update($data);
 
     if ($result) {
       return redirect()
