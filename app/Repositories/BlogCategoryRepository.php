@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\BlogCategory as Model;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
  * Class BlogCategoryRepository
@@ -40,7 +41,47 @@ class BlogCategoryRepository extends CoreRepository
    */
   public function getForComboBox()
   {
-    return $this->startConditions()->all();
+    //return $this->startConditions()->all();
+
+    $columns = implode(', ', [
+      'id',
+      'CONCAT (id, ". ", title) AS id_title',
+    ]);
+
+    /*$result[] = $this->startConditions()->all();
+
+    $result[] = $this
+      ->startConditions()
+      ->select('blog_categories.*',
+        \DB::raw('CONCAT (id, ". ", title) AS id_title'))
+      ->toBase()
+      ->get();*/
+
+    $result = $this
+      ->startConditions()
+      ->selectRaw($columns)
+      ->toBase()
+      ->get();
+
+    return $result;
   }
 
+  /**
+   * Получить категории для вывода пагинатором
+   *
+   * @param int|null $perPage
+   *
+   * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+   */
+  public function getAllWithPaginate($perPage = null)
+  {
+    $fields = ['id', 'title', 'parent_id'];
+
+    $result = $this
+      ->startConditions()
+      ->select($fields)
+      ->paginate($perPage);
+
+    return $result;
+  }
 }
