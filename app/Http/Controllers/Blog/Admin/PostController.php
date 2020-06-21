@@ -136,15 +136,6 @@ class PostController extends BaseController
 
     $data = $request->all();
 
-    /*
-     * // Ушло в обсервер
-    if (empty($data['slug'])) {
-      $data['slug'] = \Str::slug($data['title']);
-    }
-    if (empty($item->published_at) && $data['is_published']) {
-      $data['published_at'] = Carbon::now();
-    }*/
-
     $result = $item->update($data);
 
     if ($result) {
@@ -166,6 +157,20 @@ class PostController extends BaseController
    */
   public function destroy($id)
   {
-    dd(__METHOD__, $id, \request()->all());
+    //dd(__METHOD__, $id, \request()->all());
+    // Софт-удаление. В БД - остаётся
+    $result = BlogPost::destroy($id);
+
+    // Полное удаление из БД:
+    //$result = BlogPost::find($id)->forceDelete();
+
+    if ($result) {
+      return redirect()
+        ->route('blog.admin.posts.index')
+        ->with(['success' => "Запись id[$id] удалена"]);
+    } else {
+      return back()->withErrors(['msg' => 'Ошибка удаления']);
+    }
   }
+
 }
