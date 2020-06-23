@@ -5,6 +5,7 @@
 
     <div class="container">
 
+        @php $classAlert = 'col-md-11'; @endphp
         @include('blog.admin.posts.includes.result_messages')
 
         @if($item->exists)
