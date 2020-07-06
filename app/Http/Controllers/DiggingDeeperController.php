@@ -94,8 +94,45 @@ class DiggingDeeperController extends Controller
       return $newItem;
     });
 
-    dd($collection);
+//    dd($collection);
 
+//    $newItem = new \stdClass();
+//    $newItem->id = 9999;
+//
+//    $newItem2 = new \stdClass();
+//    $newItem2->id = 8888;
+
+//    dd($newItem, $newItem2);
+
+//    $collection->prepend($newItem);
+//    $collection->push($newItem2);
+//    dd($newItem, $newItem2, $collection);
+
+//    // Установить элемент в начало коллекции
+//    $newItemFirst = $collection->prepend($newItem)->first();
+//    $newItemLast = $collection->push($newItem2)->last();
+//    $pulledItem = $collection->pull(1);
+//
+//    dd(compact('collection', 'newItemFirst', 'newItemLast', 'pulledItem'));
+
+//    // Фильтрация. Замена orWhere()
+//    $filtered = $collection->filter(function ($item) {
+//      $byDay = $item->created_at->isFriday();
+//      $byDate = $item->created_at->day == 13;
+//
+//      //$result = $item->created_at->isFriday() && ($item->created_at->day == 11);
+//      $result = $byDay && $byDate;
+//
+//      return $result;
+//    });
+//
+//    dd(compact('filtered'));
+
+    $sortedSimpleCollection = collect([5, 3, 1, 2, 4])->sort()->values();
+    $sortedAscCollection = $collection->sortBy('created_at');
+    $sortedDescCollection = $collection->sortByDesc('item_id');
+
+    dd(compact('sortedSimpleCollection', 'sortedAscCollection', 'sortedDescCollection'));
   }
 
   /**
